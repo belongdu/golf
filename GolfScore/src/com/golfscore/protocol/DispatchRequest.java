@@ -20,12 +20,6 @@ import com.golfscore.protocol.json.JsonPackUnpack;
 
 public class DispatchRequest {
 	
- 	private static RequestBean reqbean = null;
- 	@SuppressWarnings("rawtypes")
-	private static Class respBeanClass = null;
- 	private static Handler mhandler = null;
- 	private static BusiTypeStruct bStruct = new BusiTypeStruct();
-	
 	 /**
 	  * 
 	  * @param ibusiType 
@@ -34,19 +28,17 @@ public class DispatchRequest {
 	  * @param rspBeanClass
 	  */
      @SuppressWarnings("rawtypes")
-	public static void doHttpRequest(int iBusiType, RequestBean requestBean, Handler handler, Class rspBeanClass){
+	public static void doHttpRequest(int iBusiType, final RequestBean requestBean,final  Handler handler,final Class rspBeanClass){
     	
-    	 reqbean = requestBean;
-    	 respBeanClass = rspBeanClass;
-    	 mhandler = handler;
-    	 bStruct = BusiTypeCreator.getBusiType(iBusiType);
+
+    	 final  BusiTypeStruct bStruct = BusiTypeCreator.getBusiType(iBusiType);
     	 
     	 new Thread(){
     		 public void run(){
     			 List<NameValuePair> namePairList = new ArrayList<NameValuePair>();	 
     	    	 String jsonResult=""; 
     	    	 try{
-    	    		 namePairList = getObjectToString(reqbean);
+    	    		 namePairList = getObjectToString(requestBean);
     	    		 jsonResult = HTTPtools.invoke(bStruct.getDoUrl(), namePairList);
     	    		 
     	    		 //没数据
@@ -55,14 +47,14 @@ public class DispatchRequest {
     	    			 Message ms=Message.obtain(); 
         	    		 ms.what = bStruct.messId;
      					 ms.obj=null;
-     					 mhandler.sendMessage(ms);
+     					 handler.sendMessage(ms);
     	    		 }else{
     	    			
-    	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, respBeanClass,bStruct.getJosonResultType());
+    	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
         	    		 Message ms=Message.obtain(); 
         	    		 ms.what = bStruct.messId;
      					 ms.obj=mBeanList;
-     					 mhandler.sendMessage(ms); 
+     					 handler.sendMessage(ms); 
     	    		 }	 
     	    	 }catch(Exception ex){
     	    		 ex.printStackTrace();
@@ -72,19 +64,17 @@ public class DispatchRequest {
     	 }.start();
      }
  	@SuppressWarnings("rawtypes")
-	public static void submitScore(int iBusiType, RequestBean requestBean, Handler handler, Class rspBeanClass,final String flag){
+	public static void submitScore(int iBusiType, final RequestBean requestBean,final  Handler handler,final Class rspBeanClass,final String flag){
     	
-   	 reqbean = requestBean;
-   	 respBeanClass = rspBeanClass;
-   	 mhandler = handler;
-   	 bStruct = BusiTypeCreator.getBusiType(iBusiType);
+ 	final  BusiTypeStruct bStruct = BusiTypeCreator.getBusiType(iBusiType);
+   	 
    	 
    	 new Thread(){
    		 public void run(){
    			 List<NameValuePair> namePairList = new ArrayList<NameValuePair>();	 
    	    	 String jsonResult=""; 
    	    	 try{
-   	    		 namePairList = getObjectToString(reqbean);
+   	    		 namePairList = getObjectToString(requestBean);
    	    		 jsonResult = HTTPtools.invoke(bStruct.getDoUrl(), namePairList);
    	    		 
    	    		 Message ms=Message.obtain(); 
@@ -96,14 +86,14 @@ public class DispatchRequest {
    	    			
        	    		 ms.what = bStruct.messId;
     					 ms.obj=null;
-    					 mhandler.sendMessage(ms);
+    					 handler.sendMessage(ms);
    	    		 }else{
    	    			
-   	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, respBeanClass,bStruct.getJosonResultType());
+   	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
        	    	 
        	    		 ms.what = bStruct.messId;
     					 ms.obj=mBeanList;
-    					 mhandler.sendMessage(ms); 
+    					 handler.sendMessage(ms); 
    	    		 }	 
    	    	 }catch(Exception ex){
    	    		 ex.printStackTrace();
@@ -111,6 +101,35 @@ public class DispatchRequest {
    	    	 
    		 }
    	 }.start();
+    }
+ 	
+ 	@SuppressWarnings("rawtypes")
+	public static ResponseBean submit(int iBusiType, RequestBean requestBean, Class rspBeanClass){
+    	
+ 		 BusiTypeStruct bStruct = BusiTypeCreator.getBusiType(iBusiType);
+	   	 List<NameValuePair> namePairList = new ArrayList<NameValuePair>();	 
+	   	 String jsonResult=""; 
+	   	 try{
+	   		 namePairList = getObjectToString(requestBean);
+	   		 jsonResult = HTTPtools.invoke(bStruct.getDoUrl(), namePairList);
+	   		 
+	   		
+	   		 //没数据
+	   		 if (jsonResult == null || jsonResult.trim().equalsIgnoreCase("")){
+	   			
+		    		
+	   		 }else{
+	   			
+	   			List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
+		    	 
+	   			return mBeanList.get(0);
+	   		 }	 
+	   	 }catch(Exception ex){
+	   		 ex.printStackTrace();
+	   	 }	 
+
+	   	 return null;
+   		 
     }
      @SuppressWarnings({ "rawtypes", "unchecked" })
 	private static List<NameValuePair> getObjectToString(Object obj) throws Exception {

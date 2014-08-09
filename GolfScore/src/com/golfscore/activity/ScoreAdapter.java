@@ -105,7 +105,7 @@ public class ScoreAdapter extends BaseAdapter{
 								reqBean.setUserId(userId);
 								reqBean.setScore(score);
 								DispatchRequest.submitScore(ProtocolConstants.USR_SCORE, reqBean, handler, ScoreRespBean.class,hole+"#"+groupId+"#"+userId);
-								db.update("infoTable", new String[]{"score","status"}, new String[]{score,"提交中"}, "hole = ? and groupId = ? and userId = ?", new String[]{hole,groupId,userId});
+								db.update("infoTable", new String[]{"score","status"}, new String[]{score,"正在提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{hole,groupId,userId});
 								notifyDataSetChanged();
 							}
 						});
@@ -144,18 +144,18 @@ public class ScoreAdapter extends BaseAdapter{
 		public void handleMessage(Message msg) {
 			try{
 				if (msg.obj != null) {
+					Bundle bundle = msg.getData();
+					String flag =bundle.getString("flag");
+					String[] arr = flag.split("#");
 					switch (msg.what) {
 					case ProtocolConstants.MESSID_USR_SCORE: // 提交成绩结果
 						
 						List<ResponseBean> respList = (List<ResponseBean>) msg.obj;
 						if (!respList.get(0).getResult().equals("0")) {
+							db.update("infoTable", new String[]{"status"}, new String[]{"提交中"}, "hole = ? and groupId = ? and userId = ?", new String[]{arr[0],arr[1],arr[2]});
 							Toast.makeText(context, "提交失败",
 									Toast.LENGTH_LONG).show();
 						}else{
-							
-							Bundle bundle = msg.getData();
-							String flag =bundle.getString("flag");
-							String[] arr = flag.split("#");
 							
 							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{arr[0],arr[1],arr[2]});	
 						
