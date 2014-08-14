@@ -27,6 +27,11 @@
         <activity android:name="com.golfscore.activity.AdminActivity"></activity>
     	<activity android:name="com.golfscore.activity.GroupActivity"></activity>
     	<activity android:name="com.golfscore.activity.ScoreActivity"></activity>
+    	                <service android:name="com.golfscore.service.PollingService">
+            <intent-filter>
+                <action android:name="com.golfscore.service.PollingService"/>
+            </intent-filter>
+                    </service>
     </application>
 
 </manifest>
