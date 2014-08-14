@@ -1,5 +1,6 @@
 package com.golfscore.activity;
 
+import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
@@ -35,15 +36,15 @@ public class ScoreActivity  extends BaseActivity{
 		
 		TextView tv = (TextView) findViewById(R.id.score_title);
 				
-		DbHandle db = new DbHandle();
+		
 		String hole = null;
 		String groupId = null;
-		Map map = db.selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"hole"}, null, null, null);
+		Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"hole"}, null, null, null);
 		if (map != null && map.size()>0) {			
 			hole = (String) map.get("paraValue");
 		}
 		
-		map = db.selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"groupId"}, null, null, null);
+		map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"groupId"}, null, null, null);
 		if (map != null && map.size()>0) {			
 			groupId = (String) map.get("paraValue");
 		}
@@ -51,7 +52,10 @@ public class ScoreActivity  extends BaseActivity{
 		
 		
 		ListView lv = (ListView) findViewById(R.id.listView);
-		ScoreAdapter adapter = new ScoreAdapter(this,hole,groupId);
+		List<Map<String,String>> list = new DbHandle().select("infoTable",new String[]{"CompetitorGroup", "CurHole","CompetitorID", "Tee","CompetitorName", "CurHoleResult", "status"}, "CompetitorGroup=? and CurHole=?", new String[]{groupId,hole}, null, null, "Tee");
+		
+		 
+		ScoreAdapter adapter = new ScoreAdapter(this,hole,groupId,list);
 		lv.setAdapter(adapter);
 	}
 	

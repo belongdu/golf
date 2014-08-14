@@ -26,37 +26,37 @@ public class SubmitService extends Service{
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		DbHandle db = new DbHandle();
-		while(true) {
-			try {
-
-				List<Map<String,String>> list = db.select("infoTable", new String[]{"groupId", "hole","userId", "name", "score",}, "status = ?", new String[]{"提交中"}, null, null, null);
-				for (int i = 0; i < list.size(); i++) {
-					Map<String,String> map = list.get(i);
-					if (map != null && map.size() > 0) {
-						ScoreReqBean reqBean = new ScoreReqBean();
-						reqBean.setGroupId(map.get("groupId"));
-						reqBean.setHole(map.get("hole"));
-						reqBean.setUserId(map.get("userId"));
-						reqBean.setScore(map.get("score"));
-						
-						ResponseBean respBean = DispatchRequest.submit(ProtocolConstants.USR_SCORE, reqBean, ScoreRespBean.class);
-						
-						if (respBean != null && respBean.getResult().equals("0")) {
-							
-						}else{
-							
-							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{reqBean.getHole(),reqBean.getGroupId(),reqBean.getUserId()});	
-							
-						}
-					}
-				}
-	
-				Thread.sleep(30000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+//		DbHandle db = new DbHandle();
+//		while(true) {
+//			try {
+//
+//				List<Map<String,String>> list = db.select("infoTable", new String[]{"groupId", "hole","userId", "name", "score",}, "status = ?", new String[]{"提交中"}, null, null, null);
+//				for (int i = 0; i < list.size(); i++) {
+//					Map<String,String> map = list.get(i);
+//					if (map != null && map.size() > 0) {
+//						ScoreReqBean reqBean = new ScoreReqBean();
+//						reqBean.setGroupId(map.get("groupId"));
+//						reqBean.setHole(map.get("hole"));
+//						reqBean.setUserId(map.get("userId"));
+//						reqBean.setScore(map.get("score"));
+//						
+//						ResponseBean respBean = DispatchRequest.submit(ProtocolConstants.USR_SCORE, reqBean, ScoreRespBean.class);
+//						
+//						if (respBean != null && respBean.getResult().equals("0")) {
+//							
+//						}else{
+//							
+//							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{reqBean.getHole(),reqBean.getGroupId(),reqBean.getUserId()});	
+//							
+//						}
+//					}
+//				}
+//	
+//				Thread.sleep(30000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }

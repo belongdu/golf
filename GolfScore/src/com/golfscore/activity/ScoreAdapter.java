@@ -30,7 +30,7 @@ import com.golfscore.protocol.constants.ProtocolConstants;
 
 public class ScoreAdapter extends BaseAdapter{
 	
-	private LayoutInflater listContainer;
+
 	private DbHandle db = new DbHandle();
 	private String hole;
 	private String groupId;
@@ -38,12 +38,12 @@ public class ScoreAdapter extends BaseAdapter{
 	private Map<String,String> data;
 	private Context context;
 	
-	public ScoreAdapter(Context context,String hole, String groupId){
+	public ScoreAdapter(Context context,String hole, String groupId,List<Map<String,String>> list){
 		super();
 		this.context = context;
 		this.hole = hole;
 		this.groupId = groupId;
-		getData();
+		this.list = list;
 	}
 	
 	@Override
@@ -68,44 +68,49 @@ public class ScoreAdapter extends BaseAdapter{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		try{
 			if (convertView == null) {			
-				convertView = listContainer.inflate(R.layout.adapter, null);
+				convertView = LayoutInflater.from(context).inflate(R.layout.adapter, null);
 			}
 			TextView name = (TextView) convertView.findViewById(R.id.user_name);
 			TextView status = (TextView) convertView.findViewById(R.id.score_status);
-			EditText scoreET = (EditText) convertView.findViewById(R.id.user_score);
+			final EditText scoreET = (EditText) convertView.findViewById(R.id.user_score);
 			Button submit = (Button) convertView.findViewById(R.id.score_submit);
-			final String score = scoreET.getText().toString();
-			getData();
+			
+//			getData();
 			
 			data= list.get(position);
 			
-			name.setText(data.get("name"));
+			name.setText(data.get("CompetitorName"));
 			status.setText(data.get("status"));
-			if (data.get("score") != null && !data.get("score").equals("")) {
-				scoreET.setText(data.get("score"));
+			if (data.get("CurHoleResult") != null && !data.get("CurHoleResult").equals("")&& !data.get("CurHoleResult").equals("0")) {
+				scoreET.setText(data.get("CurHoleResult"));
 			}
-			final String userId = data.get("userId");
+			final String userId = data.get("CompetitorID");
 			submit.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					
+					String score = scoreET.getText().toString();
 					if( score!= null &&  !score.equals("") &&!score.equals("0")) {
 						AlertDialog.Builder builder = new Builder(context);
-						builder.setMessage(data.get("name")+"的" +hole+"号洞成绩是：" +score +"。提交点击确定，重新录入点击取消");
+						builder.setMessage(data.get("CompetitorName")+"的" +hole+"号洞成绩是：" +score +"。提交点击确定，重新录入点击取消");
 						builder.setTitle("提示");
 						builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 							
+							@SuppressWarnings("rawtypes")
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								
 								ScoreReqBean reqBean = new ScoreReqBean();
-								reqBean.setGroupId(groupId);
-								reqBean.setHole(hole);
-								reqBean.setUserId(userId);
-								reqBean.setScore(score);
-								DispatchRequest.submitScore(ProtocolConstants.USR_SCORE, reqBean, handler, ScoreRespBean.class,hole+"#"+groupId+"#"+userId);
-								db.update("infoTable", new String[]{"score","status"}, new String[]{score,"正在提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{hole,groupId,userId});
+								reqBean.setIHoleNum(hole);
+								String score = scoreET.getText().toString();
+								reqBean.setIHoleResult(score);
+								Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchId"}, null, null, null);
+								String iMatchID = (String) map.get("paraValue");
+								reqBean.setIMatchID(iMatchID);
+								reqBean.setIRegisterID(userId);
+								
+								DispatchRequest.submitScore(ProtocolConstants.USR_SCORE, reqBean, handler, ScoreRespBean.class,hole+"#"+userId);
+								db.update("infoTable", new String[]{"CurHoleResult","status"}, new String[]{score,"正在提交"}, "CompetitorID = ? and CurHole = ?", new String[]{userId,hole});
 								notifyDataSetChanged();
 							}
 						});
@@ -136,7 +141,7 @@ public class ScoreAdapter extends BaseAdapter{
 	
 	private void getData(){
 		
-		list = db.select("infoTable",new String[]{"groupId", "hole","userId", "name", "score", "status"}, "groupId=? and hole=?", new String[]{groupId,hole}, null, null, null);
+		list = db.select( "infoTable",new String[]{"CompetitorGroup", "CurHole","CompetitorID", "Tee","CompetitorName", "CurHoleResult", "status"}, "CompetitorGroup=? and CurHole=?", new String[]{groupId,hole}, null, null, "Tee");
 		
 	}
 	private Handler handler = new Handler() {
@@ -152,12 +157,12 @@ public class ScoreAdapter extends BaseAdapter{
 						
 						List<ResponseBean> respList = (List<ResponseBean>) msg.obj;
 						if (!respList.get(0).getResult().equals("0")) {
-							db.update("infoTable", new String[]{"status"}, new String[]{"提交中"}, "hole = ? and groupId = ? and userId = ?", new String[]{arr[0],arr[1],arr[2]});
+							db.update("infoTable", new String[]{"status"}, new String[]{"提交中"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});
 							Toast.makeText(context, "提交失败",
 									Toast.LENGTH_LONG).show();
 						}else{
 							
-							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "hole = ? and groupId = ? and userId = ?", new String[]{arr[0],arr[1],arr[2]});	
+							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});	
 						
 							notifyDataSetChanged();
 						}

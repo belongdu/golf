@@ -9,18 +9,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
 public class HTTPtools {
 	
 	
-	private final static String SERVER_URL = "http://192.168.0.110:8080/HttpSer/servlet/";// 访问地址
+	private final static String SERVER_URL = "http://182.92.148.43:8099/api/TSMatchResult?";// 访问地址
 	private static CookieStore cookieStore;// 定义一个Cookie来保存session
 
 	/**
@@ -51,15 +53,20 @@ public class HTTPtools {
 		    //设置等待数据超时时间30秒钟 
 		    HttpConnectionParams.setSoTimeout(httpParams, 30*1000);  
 			
-		    HttpPost httpPost = new HttpPost(url);
+//		    HttpPost httpPost = new HttpPost(url);
 		    
+		    StringBuilder sb = new StringBuilder();
+		    sb.append(SERVER_URL);
 			if (params != null && params.size() > 0) {
-
-				HttpEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
-
-				httpPost.setEntity(entity);
+				for (int i = 0; i < params.size(); i++) {
+					sb.append(params.get(i).getName()+"="+params.get(i).getValue());
+					if (i+1<params.size()) {
+						sb.append("&");
+					}
+				}
 			}
-			httpPost.addHeader("Content-Type",
+			HttpGet httpGet = new HttpGet(sb.toString());
+			httpGet.addHeader("Content-Type",
 					"application/x-www-form-urlencoded; charset=\"UTF-8\"");
 			DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
 			// 添加Cookie
@@ -74,7 +81,7 @@ public class HTTPtools {
 			} else {
 				Log.i("====send data=====","null");
 			}
-			HttpResponse httpResponse = httpClient.execute(httpPost);
+			HttpResponse httpResponse = httpClient.execute(httpGet);
 			if (httpResponse.getStatusLine().getStatusCode() == 200) {
 
 				StringBuilder builder = new StringBuilder();

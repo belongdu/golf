@@ -8,13 +8,13 @@ public class DbInfo {
 
 	public static String FieldNames[][] = {
 			{ "_ID", "paraName", "paraValue", "paraExplain" }, // 参数表
-			{ "_ID", "groupId", "hole","userId", "name", "score", "status" }, // 成绩表
+			{ "_ID", "CompetitorID","CompetitorCode","CompetitorName","CompetitorGroup","Tee","CurHole","CurHolePar","CurHoleResult","status" }, // 成绩表
 	};// 字段名
 
 	public static String FieldTypes[][] = {
 			{ "INTEGER PRIMARY KEY AUTOINCREMENT", "text", "text", "text" }, // 参数表
 			{ "INTEGER PRIMARY KEY AUTOINCREMENT", "text", "text", "text", "text",
-					"text", "text" } // 成绩表
+					"text", "text","text", "text","text" } // 成绩表
 
 	};// 字段类型
 

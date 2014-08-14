@@ -3,33 +3,34 @@ package com.golfscore.protocol.bean.resquest;
 import com.golfscore.protocol.bean.RequestBean;
 
 public class ScoreReqBean extends RequestBean{
-	private String userId;
-	private String groupId;
-	private String hole;
-	private String score;
-	public String getUserId() {
-		return userId;
+	
+	private String iMatchID;
+	private String iRegisterID;
+	private String iHoleNum;
+	private String iHoleResult;
+	public String getIMatchID() {
+		return iMatchID;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setIMatchID(String iMatchID) {
+		this.iMatchID = iMatchID;
 	}
-	public String getGroupId() {
-		return groupId;
+	public String getIRegisterID() {
+		return iRegisterID;
 	}
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
+	public void setIRegisterID(String iRegisterID) {
+		this.iRegisterID = iRegisterID;
 	}
-	public String getScore() {
-		return score;
+	public String getIHoleNum() {
+		return iHoleNum;
 	}
-	public void setScore(String score) {
-		this.score = score;
+	public void setIHoleNum(String iHoleNum) {
+		this.iHoleNum = iHoleNum;
 	}
-	public String getHole() {
-		return hole;
+	public String getiHoleResult() {
+		return iHoleResult;
 	}
-	public void setHole(String hole) {
-		this.hole = hole;
+	public void setIHoleResult(String iHoleResult) {
+		this.iHoleResult = iHoleResult;
 	}
 	
 }

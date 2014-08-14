@@ -3,19 +3,21 @@ package com.golfscore.protocol.bean.resquest;
 import com.golfscore.protocol.bean.RequestBean;
 
 public class LoginReqBean extends RequestBean{
-	private String userName;
-	private String password;
-	public String getUserName() {
-		return userName;
+	
+	private String strUser;
+	private String strPwd;
+	public String getStrUser() {
+		return strUser;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setStrUser(String strUser) {
+		this.strUser = strUser;
 	}
-	public String getPassword() {
-		return password;
+	public String getStrPwd() {
+		return strPwd;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setStrPwd(String strPwd) {
+		this.strPwd = strPwd;
 	}
+	
 	
 }

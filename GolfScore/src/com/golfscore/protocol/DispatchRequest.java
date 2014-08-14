@@ -50,7 +50,7 @@ public class DispatchRequest {
      					 handler.sendMessage(ms);
     	    		 }else{
     	    			
-    	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
+    	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, bStruct.getMessId(),bStruct.getJosonResultType());
         	    		 Message ms=Message.obtain(); 
         	    		 ms.what = bStruct.messId;
      					 ms.obj=mBeanList;
@@ -89,7 +89,7 @@ public class DispatchRequest {
     					 handler.sendMessage(ms);
    	    		 }else{
    	    			
-   	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
+   	    			 List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, bStruct.getMessId(),bStruct.getJosonResultType());
        	    	 
        	    		 ms.what = bStruct.messId;
     					 ms.obj=mBeanList;
@@ -120,7 +120,7 @@ public class DispatchRequest {
 		    		
 	   		 }else{
 	   			
-	   			List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, rspBeanClass,bStruct.getJosonResultType());
+	   			List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, bStruct.getMessId(),bStruct.getJosonResultType());
 		    	 
 	   			return mBeanList.get(0);
 	   		 }	 

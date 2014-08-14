@@ -24,6 +24,9 @@ import com.golfscore.protocol.bean.ResponseBean;
 import com.golfscore.protocol.bean.response.GroupRespBean;
 import com.golfscore.protocol.bean.resquest.GroupReqBean;
 import com.golfscore.protocol.constants.ProtocolConstants;
+import com.golfscore.service.PollingService;
+import com.golfscore.service.PollingUtils;
+
 
 public class GroupActivity extends BaseActivity implements OnClickListener{
 	EditText et ;
@@ -31,6 +34,7 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		PollingUtils.startPollingService(this, 30, PollingService.class, PollingService.ACTION);
 		setContentView(R.layout.group);
 		Button exit = (Button) findViewById(R.id.groupBack);
 		Button sure = (Button) findViewById(R.id.sure_group);
@@ -56,8 +60,14 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 		TextView tv2 = (TextView) findViewById(R.id.match_info);
 		tv2.setText("赛事信息："+matchName);
 	}
-
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		PollingUtils.stopPollingService(this, PollingService.class, PollingService.ACTION);
+	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.groupBack) {
@@ -67,12 +77,25 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 			if (et.getText() != null && !et.getText().equals("")) {
 				String groupId = et.getText().toString();
 				GroupReqBean reqBean = new GroupReqBean();
-				reqBean.setGroupId(groupId);
+				reqBean.setIGroupNum(groupId);
+				reqBean.setIHoleNum(hole);
 				
+				Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchId"}, null, null, null);
+				String iMatchID = (String) map.get("paraValue");
+				
+				reqBean.setIMatchID(iMatchID);
+				new DbHandle().delete("paramTable", "paraName = ?", new String[]{"groupId"});
 				new DbHandle().insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"groupId",groupId});
-
 				
-				DispatchRequest.doHttpRequest(ProtocolConstants.MESSID_USR_GROUP, reqBean, handler, GroupRespBean.class);
+
+				List list = new DbHandle().select("infoTable",new String[]{"CompetitorGroup", "CurHole","CompetitorID", "Tee","CompetitorName", "CurHoleResult", "status"}, "CompetitorGroup=? and CurHole=?", new String[]{groupId,hole}, null, null, "Tee");
+				if (list == null || list.size() == 0) {					
+					DispatchRequest.doHttpRequest(ProtocolConstants.MESSID_USR_GROUP, reqBean, handler, GroupRespBean.class);
+				} else {
+					Intent intent = new Intent(GroupActivity.this,ScoreActivity.class);
+					startActivity(intent);
+				}
+				
 				
 			} else {
 				Toast.makeText(this, "请输入组号", Toast.LENGTH_SHORT).show();
@@ -97,21 +120,34 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 						
 					}else{
 						
-						String userId = null;
-						String userName = null;
+						String CompetitorID = null;
+						String CompetitorCode = null;
+						String CompetitorName = null;
+						String CompetitorGroup = null;
+						String Tee = null;
+						String CurHole = null;
+						String CurHolePar = null;
+						String CurHoleResult = null;
 						boolean isSuccess = true;
-						EditText et = (EditText) findViewById(R.id.group_id);
-						String groupId = et.getText().toString();
+						
 						Map map = new HashMap();
 						for (int i = 0; i <respList.size(); i++) {
-							userId = ((GroupRespBean)respList.get(i)).getUserId();
-							userName = ((GroupRespBean)respList.get(i)).getUserName();
+							GroupRespBean bean = (GroupRespBean)respList.get(i);
+							CompetitorID = bean.getCompetitorID();
+							CompetitorCode = bean.getCompetitorCode();
+							CompetitorName = bean.getCompetitorName();
+							CompetitorGroup = bean.getCompetitorGroup();
+							Tee = bean.getTee();
+							CurHolePar = bean.getCurHolePar();
+							CurHoleResult = bean.getCurHoleResult();
+							CurHole = bean.getCurHole();
+							
 							map.clear();
 							DbHandle db = new DbHandle();
 							
-							if (userId != null && !userId.equals("") &&userName != null && !userName.equals("")) {
+							if (CompetitorID != null && !CompetitorID.equals("") ) {
 								
-								db.insert("infoTable", new String[]{"groupId","hole","userId","name","status"}, new String[]{groupId,hole,userId,userName,"未录入"});	
+								db.insert("infoTable", new String[]{"CompetitorID","CompetitorCode","CompetitorName","CompetitorGroup","Tee","CurHole","CurHolePar","CurHoleResult","status"}, new String[]{CompetitorID,CompetitorCode,CompetitorName,CompetitorGroup,Tee,CurHole,CurHolePar,CurHoleResult,"未录入"});	
 		
 							} else {
 								isSuccess = false;
@@ -124,7 +160,7 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 						if (isSuccess) {
 							Intent intent = new Intent(GroupActivity.this,ScoreActivity.class);
 							startActivity(intent);
-							finish();
+							
 						} 
 						
 					}
@@ -138,3 +174,9 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 		}
 	};
 }
+
+		
+
+
+
+

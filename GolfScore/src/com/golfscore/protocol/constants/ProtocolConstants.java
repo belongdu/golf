@@ -18,7 +18,7 @@ public class ProtocolConstants {
  	public static final int MESSID_USR_SCORE = 3;//提交成绩
 
  		
- 	public static final String URL_USR_LOGIN = "Succ";//登录
+ 	public static final String URL_USR_LOGIN = "";//登录
 	public static final String URL_USR_MATCH = "Succ";//获取比赛信息
 	public static final String URL_USR_GROUP = "Mpay";//获取组信息
 	public static final String URL_USR_SCORE = "Succ";//提交成绩

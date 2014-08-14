@@ -102,8 +102,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 					Toast.makeText(this, "请先登录管理员账户选择球洞", Toast.LENGTH_SHORT).show();
 				} else {
 					LoginReqBean reqBean = new LoginReqBean();
-					reqBean.setUserName(userName);
-					reqBean.setPassword(password);
+					reqBean.setStrUser(userName);
+					reqBean.setStrPwd(password);
 					DispatchRequest.doHttpRequest(ProtocolConstants.USR_LOGIN, reqBean, handler, LoginRespBean.class);
 					
 				}
@@ -125,14 +125,20 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 						Toast.makeText(LoginActivity.this, "用户名或密码错",
 								Toast.LENGTH_LONG).show();
 					}else{
-						String matchId = ((LoginRespBean)respList.get(0)).getMatchId();
-						String matchName = ((LoginRespBean)respList.get(0)).getMatchName();
+						String MatchID = ((LoginRespBean)respList.get(0)).getMatchID();
+						String MatchKey = ((LoginRespBean)respList.get(0)).getMatchKey();
+						String MatchDate = ((LoginRespBean)respList.get(0)).getMatchDate();
+						String MatchName = ((LoginRespBean)respList.get(0)).getMatchName();
+						String MatchStatus = ((LoginRespBean)respList.get(0)).getMatchStatus();
 						
-						if (matchId != null && !matchId.equals("") &&matchName != null && !matchName.equals("")) {
+						if (MatchID != null && !MatchID.equals("")) {
 							
 							DbHandle db = new DbHandle();
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",matchId});	
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",matchName});
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",MatchID});	
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchDate",MatchDate});
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchName});
 							
 							Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
 							startActivity(intent);
