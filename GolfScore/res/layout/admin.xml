@@ -7,27 +7,30 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity" >
-
-    <ImageView
-        android:id="@+id/imageView1"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:contentDescription="@string/desc"
-        android:src="@drawable/bg" />
-
+        android:layout_height="88dp"
+        android:src="@drawable/topbg"
+         >
+    <Button
+        android:id="@+id/back_bt"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_back"
+        android:text="@string/back" />
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:text="@string/choose" />
-
+    </LinearLayout>
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/imageView1"
-        android:layout_below="@+id/imageView1" >
+        android:layout_below="@+id/linearLayout3" >
 
         <TableLayout
             android:layout_width="match_parent"
@@ -179,13 +182,6 @@
         </TableLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/back_bt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
-        android:layout_alignLeft="@+id/imageView1"
-        android:text="@string/back" />
+
 
 </RelativeLayout>

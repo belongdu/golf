@@ -43,7 +43,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		
+		 
 		Button bt = (Button) findViewById(R.id.button1);
 		bt.setOnClickListener(this);		
 		
@@ -138,7 +138,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchDate",MatchDate});
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchName});
+							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchStatus});
 							
 							Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
 							startActivity(intent);
