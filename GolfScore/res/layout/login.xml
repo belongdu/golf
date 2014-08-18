@@ -7,12 +7,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/linearLayout2"
         android:layout_width="fill_parent"
         android:layout_height="88dp"
-        android:background="@drawable/topbg"
-        android:orientation="vertical" >
+        android:background="@drawable/topbg" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -24,7 +23,7 @@
             android:text="@string/login_text"
             android:textColor="#ffffff"
             android:textSize="36px" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout12"
