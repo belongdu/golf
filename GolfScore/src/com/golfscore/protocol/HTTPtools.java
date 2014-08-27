@@ -65,6 +65,7 @@ public class HTTPtools {
 					}
 				}
 			}
+			
 			HttpGet httpGet = new HttpGet(sb.toString());
 			httpGet.addHeader("Content-Type",
 					"application/x-www-form-urlencoded; charset=\"UTF-8\"");
@@ -73,7 +74,7 @@ public class HTTPtools {
 			if (cookieStore != null) {
 				httpClient.setCookieStore(cookieStore);
 			}
-			Log.i("====send url=====",url);
+			Log.i("====send url=====",sb.toString());
 			if (params != null) {
 				for (NameValuePair value: params) {
 					Log.i("====send data=====",value.getName() +":" + value.getValue());

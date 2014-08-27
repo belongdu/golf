@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,13 +38,14 @@ public class ScoreAdapter extends BaseAdapter{
 	private List<Map<String,String>> list;
 	private Map<String,String> data;
 	private Context context;
-	
+	private LayoutInflater mInflater;
 	public ScoreAdapter(Context context,String hole, String groupId,List<Map<String,String>> list){
 		super();
 		this.context = context;
 		this.hole = hole;
 		this.groupId = groupId;
 		this.list = list;
+		mInflater = LayoutInflater.from(context);
 	}
 	
 	@Override
@@ -67,69 +69,73 @@ public class ScoreAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		try{
-			if (convertView == null) {			
-				convertView = LayoutInflater.from(context).inflate(R.layout.adapter, null);
-			}
-			TextView name = (TextView) convertView.findViewById(R.id.user_name);
-			TextView status = (TextView) convertView.findViewById(R.id.score_status);
-			final EditText scoreET = (EditText) convertView.findViewById(R.id.user_score);
-			Button submit = (Button) convertView.findViewById(R.id.score_submit);
+			final ViewHolder holder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.adapter, null);
+                holder = new ViewHolder();
+                holder.name = (TextView) convertView.findViewById(R.id.user_name);
+                holder.scoreET = (EditText) convertView.findViewById(R.id.user_score);
+                holder.status = (TextView) convertView.findViewById(R.id.score_status);
+                holder.submit = (Button) convertView.findViewById(R.id.score_submit);
+                convertView.setTag(holder);
+            }
+            else{
+                holder = (ViewHolder)convertView.getTag();
+            }
 			
-//			getData();
+			
+			getData();
 			
 			data= list.get(position);
 			
-			name.setText(data.get("CompetitorName"));
-			status.setText(data.get("status"));
-			if (data.get("CurHoleResult") != null && !data.get("CurHoleResult").equals("")&& !data.get("CurHoleResult").equals("0")) {
-				scoreET.setText(data.get("CurHoleResult"));
-			}
-			final String userId = data.get("CompetitorID");
-			submit.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					String score = scoreET.getText().toString();
-					if( score!= null &&  !score.equals("") &&!score.equals("0")) {
-						AlertDialog.Builder builder = new Builder(context);
-						builder.setMessage(data.get("CompetitorName")+"的" +hole+"号洞成绩是：" +score +"。提交点击确定，重新录入点击取消");
-						builder.setTitle("提示");
-						builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-							
-							@SuppressWarnings("rawtypes")
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								
-								ScoreReqBean reqBean = new ScoreReqBean();
-								reqBean.setIHoleNum(hole);
-								String score = scoreET.getText().toString();
-								reqBean.setIHoleResult(score);
-								Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchId"}, null, null, null);
-								String iMatchID = (String) map.get("paraValue");
-								reqBean.setIMatchID(iMatchID);
-								reqBean.setIRegisterID(userId);
-								
-								DispatchRequest.submitScore(ProtocolConstants.USR_SCORE, reqBean, handler, ScoreRespBean.class,hole+"#"+userId);
-								db.update("infoTable", new String[]{"CurHoleResult","status"}, new String[]{score,"正在提交"}, "CompetitorID = ? and CurHole = ?", new String[]{userId,hole});
-								notifyDataSetChanged();
-							}
-						});
-						builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-						builder.create().show();
-					} else {
-						Toast.makeText(context, "请先输入成绩",
+			holder.name.setText(data.get("CompetitorName"));
+			holder.status.setText(data.get("status"));
+			holder.scoreET.setInputType(InputType.TYPE_CLASS_NUMBER) ;
+			if (!data.get("status").equals("未录入")) {
+				holder.scoreET.setEnabled(false);
+				holder.scoreET.setText(data.get("CurHoleResult"));
+				holder.submit.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Toast.makeText(context, "该成绩已经提交过",
 								Toast.LENGTH_LONG).show();
 					}
+				});
+			} else {
+				final String userId = data.get("CompetitorID");
+				holder.scoreET.setEnabled(true);
+				holder.scoreET.setText("");
+				holder.submit.setOnClickListener(new OnClickListener() {
 					
+					@Override
+					public void onClick(View v) {
+						String score = holder.scoreET.getText().toString();
+						if( score!= null &&  !score.equals("") &&!score.equals("0")) {
+							ScoreReqBean reqBean = new ScoreReqBean();
+							reqBean.setIHoleNum(hole);
+							reqBean.setIHoleResult(score);
+							Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchId"}, null, null, null);
+							String iMatchID = (String) map.get("paraValue");
+							reqBean.setIMatchID(iMatchID);
+							reqBean.setIRegisterID(userId);
+							
+							DispatchRequest.submitScore(ProtocolConstants.USR_SCORE, reqBean, handler, ScoreRespBean.class,hole+"#"+userId);
+							db.update("infoTable", new String[]{"CurHoleResult","status"}, new String[]{score,"正在提交"}, "CompetitorID = ? and CurHole = ?", new String[]{userId,hole});
+							notifyDataSetChanged();
+						} else {
+							Toast.makeText(context, "请先输入成绩",
+									Toast.LENGTH_LONG).show();
+						}
+						
 
-				}
-			});
+					}
+				});
+			}
+			
+
+			
+
 		} catch(Exception e) {
 			
 		}
@@ -179,4 +185,10 @@ public class ScoreAdapter extends BaseAdapter{
 
 		}
 	};
+    static class ViewHolder {
+    	TextView name;
+    	EditText scoreET;
+    	TextView status;
+    	Button submit;
+    }
 }

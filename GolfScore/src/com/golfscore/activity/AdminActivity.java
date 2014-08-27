@@ -4,6 +4,7 @@ package com.golfscore.activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,7 +39,8 @@ public class AdminActivity extends BaseActivity implements OnClickListener {
 		Button hb17 = (Button) findViewById(R.id.hb17);
 		Button hb18 = (Button) findViewById(R.id.hb18);
 		Button back_bt = (Button) findViewById(R.id.back_bt);
-
+		Button back_bt2 = (Button) findViewById(R.id.button1);
+		
 		hb1.setOnClickListener(this);
 		hb2.setOnClickListener(this);
 		hb3.setOnClickListener(this);
@@ -58,6 +60,7 @@ public class AdminActivity extends BaseActivity implements OnClickListener {
 		hb17.setOnClickListener(this);
 		hb18.setOnClickListener(this);
 		back_bt.setOnClickListener(this);
+		back_bt2.setOnClickListener(this);
 	}
 
 	@Override
@@ -118,6 +121,13 @@ public class AdminActivity extends BaseActivity implements OnClickListener {
 			dialog("18");
 			break;
 		case R.id.back_bt:
+			Intent intent = new Intent(AdminActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		case R.id.button1:
+			Intent intent2 = new Intent(AdminActivity.this,LoginActivity.class);
+			startActivity(intent2);
 			finish();
 			return;
 		}
@@ -132,7 +142,10 @@ public class AdminActivity extends BaseActivity implements OnClickListener {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				new DbHandle().delete("paramTable", "paraName = ?", new String[]{"hole"});
 				new DbHandle().insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"hole",hole});
+				Intent intent = new Intent(AdminActivity.this,LoginActivity.class);
+				startActivity(intent);
 				finish();
 			}
 		});

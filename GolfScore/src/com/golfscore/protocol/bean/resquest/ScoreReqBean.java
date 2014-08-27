@@ -26,7 +26,7 @@ public class ScoreReqBean extends RequestBean{
 	public void setIHoleNum(String iHoleNum) {
 		this.iHoleNum = iHoleNum;
 	}
-	public String getiHoleResult() {
+	public String getIHoleResult() {
 		return iHoleResult;
 	}
 	public void setIHoleResult(String iHoleResult) {

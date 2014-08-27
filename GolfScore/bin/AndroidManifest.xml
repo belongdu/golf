@@ -16,6 +16,7 @@
         android:theme="@style/GolfTheme" >
         <activity
             android:name="com.golfscore.activity.LoginActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +24,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.golfscore.activity.AdminActivity"></activity>
-    	<activity android:name="com.golfscore.activity.GroupActivity"></activity>
-    	<activity android:name="com.golfscore.activity.ScoreActivity"></activity>
+        <activity android:name="com.golfscore.activity.AdminActivity"
+            android:screenOrientation="portrait"></activity>
+    	<activity android:name="com.golfscore.activity.GroupActivity"
+    	     android:screenOrientation="portrait"></activity>
+    	<activity android:name="com.golfscore.activity.ScoreActivity"
+    	     android:screenOrientation="portrait"></activity>
         <service android:name="com.golfscore.service.PollingService">
             <intent-filter>
                 <action android:name="com.golfscore.service.PollingService"/>

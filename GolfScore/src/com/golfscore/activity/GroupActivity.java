@@ -31,35 +31,42 @@ import com.golfscore.service.PollingUtils;
 public class GroupActivity extends BaseActivity implements OnClickListener{
 	EditText et ;
 	String hole;
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		PollingUtils.startPollingService(this, 30, PollingService.class, PollingService.ACTION);
 		setContentView(R.layout.group);
-		Button exit = (Button) findViewById(R.id.groupBack);
+		Button exit1 = (Button) findViewById(R.id.groupBack1);
+		Button exit2 = (Button) findViewById(R.id.groupBack2);
 		Button sure = (Button) findViewById(R.id.sure_group);
-		exit.setOnClickListener(this);
+		TextView tv = (TextView) findViewById(R.id.textView2);
+		DbHandle db = new DbHandle();
+		Map map = db.selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"userName"}, null, null, null);
+		tv.setText("记分员"+map.get("paraValue"));
+		exit1.setOnClickListener(this);
+		exit2.setOnClickListener(this);
 		sure.setOnClickListener(this);
-		
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void onResume() {
-		super.onResume();
 		et = (EditText) findViewById(R.id.group_id);
-		et.setText("");
-		Map map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"hole"}, null, null, null);
+		
+		map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"hole"}, null, null, null);
 		
 		hole = (String) map.get("paraValue");
 		TextView tv1 = (TextView) findViewById(R.id.hole_info);
-		tv1.setText("当前录入"+hole+"号洞成绩");
+		tv1.setText(hole);
 		
 		map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchName"}, null, null, null);
 		String matchName = (String) map.get("paraValue");
-		TextView tv2 = (TextView) findViewById(R.id.match_info);
-		tv2.setText("赛事信息："+matchName);
+		TextView tv2 = (TextView) findViewById(R.id.editText1);
+		tv2.setText(matchName);
+		
+		map = new DbHandle().selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"matchDate"}, null, null, null);
+		String matchDate = (String) map.get("paraValue");
+		TextView tv3 = (TextView) findViewById(R.id.editText2);
+		tv3.setText(matchDate);
 	}
+
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -70,7 +77,7 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.groupBack) {
+		if (v.getId() == R.id.groupBack1||v.getId() == R.id.groupBack2) {
 			finish();
 		} else if (v.getId() == R.id.sure_group) {
 			

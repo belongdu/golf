@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Intent;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +50,32 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 		bt.setOnClickListener(this);		
 		
 		et1 = (EditText) findViewById(R.id.editText1);
+		
+//		et1.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+//		      
+//		    @Override  
+//		    public void onFocusChange(View v, boolean hasFocus) {  
+//		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
+//		        if(hasFocus){//获得焦点  
+//		        	iv.setVisibility(View.GONE);
+//		        }else{//失去焦点  
+//		        	iv.setVisibility(View.VISIBLE);
+//		        }  
+//		    }             
+//		});  
 		et2 = (EditText) findViewById(R.id.editText2);
+//		et2.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+//		      
+//		    @Override  
+//		    public void onFocusChange(View v, boolean hasFocus) {  
+//		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
+//		    	if(hasFocus){//获得焦点  
+//		        	iv.setVisibility(View.GONE);
+//		        }else{//失去焦点  
+//		        	iv.setVisibility(View.VISIBLE);
+//		        }  
+//		    }             
+//		});  
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -64,7 +91,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 		if (map != null && map.size()>0) {			
 			hole = (String) map.get("paraValue");
 			TextView tv = (TextView) findViewById(R.id.editText3);
-			tv.setText(hole);
+			tv.setText("此设备已选"+hole+"号洞");
 		}
 	}
 
@@ -97,6 +124,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 			if (userName.equals("admin") && password.equals("123456")) { //超级管理员
 				Intent intent = new Intent(this,AdminActivity.class);
 				startActivity(intent);
+				finish();
 			} else {
 				if (hole == null) {
 					Toast.makeText(this, "请先登录管理员账户选择球洞", Toast.LENGTH_SHORT).show();
@@ -104,6 +132,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 					LoginReqBean reqBean = new LoginReqBean();
 					reqBean.setStrUser(userName);
 					reqBean.setStrPwd(password);
+					DbHandle db = new DbHandle();
+					db.delete("paramTable", "paraName = ?", new String[]{"userName"});
+					db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"userName",userName});	
 					DispatchRequest.doHttpRequest(ProtocolConstants.USR_LOGIN, reqBean, handler, LoginRespBean.class);
 					
 				}
@@ -134,6 +165,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 						if (MatchID != null && !MatchID.equals("")) {
 							
 							DbHandle db = new DbHandle();
+							db.delete("paramTable", "paraName = ?", new String[]{"matchId"});
+							db.delete("paramTable", "paraName = ?", new String[]{"matchName"});
+							db.delete("paramTable", "paraName = ?", new String[]{"matchKey"});
+							db.delete("paramTable", "paraName = ?", new String[]{"matchDate"});
+							db.delete("paramTable", "paraName = ?", new String[]{"matchStatus"});
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",MatchID});	
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
 							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});

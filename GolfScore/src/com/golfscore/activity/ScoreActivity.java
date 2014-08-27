@@ -19,7 +19,12 @@ public class ScoreActivity  extends BaseActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.score);
-		Button button = (Button) findViewById(R.id.score_back);
+		Button button = (Button) findViewById(R.id.groupBack1);
+		Button button2 = (Button) findViewById(R.id.groupBack2);
+		TextView tv = (TextView) findViewById(R.id.textView2);
+		DbHandle db = new DbHandle();
+		Map map = db.selectOneRecord("paramTable", new String[]{"paraValue"}, "paraName = ?", new String[]{"userName"}, null, null, null);
+		tv.setText("记分员"+map.get("paraValue"));
 		button.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -27,6 +32,14 @@ public class ScoreActivity  extends BaseActivity{
 				finish();
 			}
 		});
+		button2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -35,7 +48,8 @@ public class ScoreActivity  extends BaseActivity{
 		super.onResume();
 		
 		TextView tv = (TextView) findViewById(R.id.score_title);
-				
+		TextView tv1 = (TextView) findViewById(R.id.editText1);
+		
 		
 		String hole = null;
 		String groupId = null;
@@ -52,9 +66,9 @@ public class ScoreActivity  extends BaseActivity{
 		
 		
 		ListView lv = (ListView) findViewById(R.id.listView);
-		List<Map<String,String>> list = new DbHandle().select("infoTable",new String[]{"CompetitorGroup", "CurHole","CompetitorID", "Tee","CompetitorName", "CurHoleResult", "status"}, "CompetitorGroup=? and CurHole=?", new String[]{groupId,hole}, null, null, "Tee");
+		List<Map<String,String>> list = new DbHandle().select("infoTable",new String[]{"CompetitorGroup", "CurHole","CompetitorID", "Tee","CompetitorName", "CurHoleResult","CurHolePar", "status"}, "CompetitorGroup=? and CurHole=?", new String[]{groupId,hole}, null, null, "Tee");
 		
-		 
+		tv1.setText("标准杆："+list.get(0).get("CurHolePar"));
 		ScoreAdapter adapter = new ScoreAdapter(this,hole,groupId,list);
 		lv.setAdapter(adapter);
 	}
