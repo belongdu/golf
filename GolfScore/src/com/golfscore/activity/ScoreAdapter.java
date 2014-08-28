@@ -3,10 +3,7 @@ package com.golfscore.activity;
 import java.util.List;
 import java.util.Map;
 
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -108,6 +105,7 @@ public class ScoreAdapter extends BaseAdapter{
 				holder.scoreET.setText("");
 				holder.submit.setOnClickListener(new OnClickListener() {
 					
+					@SuppressWarnings("rawtypes")
 					@Override
 					public void onClick(View v) {
 						String score = holder.scoreET.getText().toString();
@@ -164,8 +162,8 @@ public class ScoreAdapter extends BaseAdapter{
 						List<ResponseBean> respList = (List<ResponseBean>) msg.obj;
 						if (!respList.get(0).getResult().equals("0")) {
 							db.update("infoTable", new String[]{"status"}, new String[]{"提交中"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});
-							Toast.makeText(context, "提交失败",
-									Toast.LENGTH_LONG).show();
+//							Toast.makeText(context, "提交失败",
+//									Toast.LENGTH_LONG).show();
 						}else{
 							
 							db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});	
@@ -175,8 +173,8 @@ public class ScoreAdapter extends BaseAdapter{
 						break;
 					}
 				}else {
-					Toast.makeText(context, "请求发送失败，请稍后再试！",
-							Toast.LENGTH_LONG).show();
+//					Toast.makeText(context, "请求发送失败，请稍后再试！",
+//							Toast.LENGTH_LONG).show();
 				}
 				;
 			} catch(Exception e) {

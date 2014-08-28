@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Intent;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,31 +50,31 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 		
 		et1 = (EditText) findViewById(R.id.editText1);
 		
-//		et1.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
-//		      
-//		    @Override  
-//		    public void onFocusChange(View v, boolean hasFocus) {  
-//		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
-//		        if(hasFocus){//获得焦点  
-//		        	iv.setVisibility(View.GONE);
-//		        }else{//失去焦点  
-//		        	iv.setVisibility(View.VISIBLE);
-//		        }  
-//		    }             
-//		});  
+		et1.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+		      
+		    @Override  
+		    public void onFocusChange(View v, boolean hasFocus) {  
+		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
+		        if(hasFocus){//获得焦点  
+		        	iv.setVisibility(View.GONE);
+		        }else{//失去焦点  
+		        	iv.setVisibility(View.VISIBLE);
+		        }  
+		    }             
+		});  
 		et2 = (EditText) findViewById(R.id.editText2);
-//		et2.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
-//		      
-//		    @Override  
-//		    public void onFocusChange(View v, boolean hasFocus) {  
-//		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
-//		    	if(hasFocus){//获得焦点  
-//		        	iv.setVisibility(View.GONE);
-//		        }else{//失去焦点  
-//		        	iv.setVisibility(View.VISIBLE);
-//		        }  
-//		    }             
-//		});  
+		et2.setOnFocusChangeListener(new View.OnFocusChangeListener() {  
+		      
+		    @Override  
+		    public void onFocusChange(View v, boolean hasFocus) {  
+		    	ImageView iv = (ImageView) findViewById(R.id.imageView1);
+		    	if(hasFocus){//获得焦点  
+		        	iv.setVisibility(View.GONE);
+		        }else{//失去焦点  
+		        	iv.setVisibility(View.VISIBLE);
+		        }  
+		    }             
+		});  
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -145,7 +144,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 	}
 
 	private Handler handler = new Handler() {
-		@SuppressWarnings({ "unchecked" })
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public void handleMessage(Message msg) {
 			if (msg.obj != null) {
 				switch (msg.what) {
@@ -165,20 +164,33 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 						if (MatchID != null && !MatchID.equals("")) {
 							
 							DbHandle db = new DbHandle();
-							db.delete("paramTable", "paraName = ?", new String[]{"matchId"});
-							db.delete("paramTable", "paraName = ?", new String[]{"matchName"});
-							db.delete("paramTable", "paraName = ?", new String[]{"matchKey"});
-							db.delete("paramTable", "paraName = ?", new String[]{"matchDate"});
-							db.delete("paramTable", "paraName = ?", new String[]{"matchStatus"});
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",MatchID});	
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchDate",MatchDate});
-							db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchStatus});
+							Map map = db.selectOneRecord("paramTable", new String[]{"paraValue"},"paraName = ?", new String[]{"matchId"}, null, null, null);
+							if (map == null || map.size() == 0) {
+								db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",MatchID});	
+								db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
+								db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});
+								db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchDate",MatchDate});
+								db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchStatus});
+								
+							} else {
+								if (!MatchID.equals(map.get("paraValue"))){
+									db.delete("paramTable", "paraName = ?", new String[]{"matchId"});
+									db.delete("paramTable", "paraName = ?", new String[]{"matchName"});
+									db.delete("paramTable", "paraName = ?", new String[]{"matchKey"});
+									db.delete("paramTable", "paraName = ?", new String[]{"matchDate"});
+									db.delete("paramTable", "paraName = ?", new String[]{"matchStatus"});
+									db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchId",MatchID});	
+									db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchName",MatchName});
+									db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchKey",MatchKey});
+									db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchDate",MatchDate});
+									db.insert("paramTable", new String[]{"paraName","paraValue"}, new String[]{"matchStatus",MatchStatus});
+									db.delete("infoTable", null, null);
+								}
+							}
 							
 							Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
 							startActivity(intent);
-							
+							finish();
 						} else {
 							Toast.makeText(LoginActivity.this, "服务器异常，请稍后再试！",
 									Toast.LENGTH_LONG).show();

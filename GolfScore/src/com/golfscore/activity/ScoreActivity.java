@@ -15,6 +15,7 @@ import com.golfscore.activity.base.BaseActivity;
 import com.golfscore.db.DbHandle;
 
 public class ScoreActivity  extends BaseActivity{
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

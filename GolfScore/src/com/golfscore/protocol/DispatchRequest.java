@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.golfscore.db.DbHandle;
 import com.golfscore.protocol.bean.RequestBean;
 import com.golfscore.protocol.bean.ResponseBean;
 import com.golfscore.protocol.busi.BusiTypeCreator;
@@ -94,6 +95,44 @@ public class DispatchRequest {
        	    		 ms.what = bStruct.messId;
     					 ms.obj=mBeanList;
     					 handler.sendMessage(ms); 
+   	    		 }	 
+   	    	 }catch(Exception ex){
+   	    		 ex.printStackTrace();
+   	    	 }
+   	    	 
+   		 }
+   	 }.start();
+    }
+ 	
+ 	@SuppressWarnings("rawtypes")
+	public static void submitScore(int iBusiType, final RequestBean requestBean,final Class rspBeanClass,final String flag){
+    	
+ 	final  BusiTypeStruct bStruct = BusiTypeCreator.getBusiType(iBusiType);
+   	 
+   	 
+   	 new Thread(){
+   		 public void run(){
+   			 List<NameValuePair> namePairList = new ArrayList<NameValuePair>();	 
+   	    	 String jsonResult=""; 
+   	    	 try{
+   	    		 namePairList = getObjectToString(requestBean);
+   	    		 jsonResult = HTTPtools.invoke(bStruct.getDoUrl(), namePairList);
+   	    		 
+   	    		
+   	    		 //没数据
+   	    		 if (jsonResult == null || jsonResult.trim().equalsIgnoreCase("")){
+   	    			
+   	    		 }else{
+   	    			
+   	    			List<ResponseBean> mBeanList = JsonPackUnpack.UnPack(jsonResult, bStruct.getMessId(),bStruct.getJosonResultType());
+   	    			DbHandle db = new DbHandle();
+					String[] arr = flag.split("#");
+   	    			if (!mBeanList.get(0).getResult().equals("0")) {
+						db.update("infoTable", new String[]{"status"}, new String[]{"提交中"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});
+					}else{
+						db.update("infoTable", new String[]{"status"}, new String[]{"已提交"}, "CurHole = ? and CompetitorID = ?", new String[]{arr[0],arr[1]});	
+					}
+       	    		
    	    		 }	 
    	    	 }catch(Exception ex){
    	    		 ex.printStackTrace();

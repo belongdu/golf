@@ -78,6 +78,8 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.groupBack1||v.getId() == R.id.groupBack2) {
+			Intent intent = new Intent(this,LoginActivity.class);
+			startActivity(intent);
 			finish();
 		} else if (v.getId() == R.id.sure_group) {
 			
