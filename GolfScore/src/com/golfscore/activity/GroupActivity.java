@@ -168,6 +168,7 @@ public class GroupActivity extends BaseActivity implements OnClickListener{
 						
 						if (isSuccess) {
 							Intent intent = new Intent(GroupActivity.this,ScoreActivity.class);
+							intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 							startActivity(intent);
 							
 						} 

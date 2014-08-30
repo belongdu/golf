@@ -1,15 +1,21 @@
 package com.golfscore.application;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.SQLException;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 
+import com.golfscore.activity.LoginActivity;
 import com.golfscore.db.DbHelper;
 import com.golfscore.db.DbInfo;
 
 
-public class BaseController extends Application{
+public class BaseController extends Application implements UncaughtExceptionHandler{
 
 	
 	public static DbHelper db = null;
@@ -53,6 +59,20 @@ public class BaseController extends Application{
 		appdbhelper.close();
 		
 		return true;
+	}
+
+
+	@Override
+	public void uncaughtException(Thread thread, Throwable ex) {
+		Intent intent = new Intent(this.getApplicationContext(), LoginActivity.class);  
+        PendingIntent restartIntent = PendingIntent.getActivity(    
+                this.getApplicationContext(), 0, intent,    
+                Intent.FLAG_ACTIVITY_NEW_TASK);                                                 
+        //退出程序                                          
+        AlarmManager mgr = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);    
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(),    
+                restartIntent); // 1秒钟后重启应用   
+        
 	}
 	
 }

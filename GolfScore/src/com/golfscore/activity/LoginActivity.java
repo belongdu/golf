@@ -189,6 +189,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener{
 							}
 							
 							Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
+							intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 							startActivity(intent);
 							finish();
 						} else {
